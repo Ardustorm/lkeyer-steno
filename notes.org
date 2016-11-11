@@ -1,0 +1,15 @@
+#+STARTUP: indent
+#+STARTUP: hidestar
+
+* Where I am so far
+[2016-11-11 Fri]
+The current design mostly works but there are a few things that need improvement. The aluminum foil I used as the ground plane is ripping in a few places from the wires hitting it. Also, some of the keys are weaker than others because of how I routed the wires. Here is what I will try to fix/improve in the next version:
+
+** Thicker hinges
+I often mis-stroked because they keys were too easy to activate (though part of the problem was that the wires pulled some of the keys down more). I am thickening the hinges so that I don't mess up as much as I am learning. This might be something that I reduce as I become more proficient.
+
+** Better routing of wires
+Some of the wires are pulling the keys down. I am going to try and add a hole or path along the key so that the wires do not move the keys. I am also going to try and add a channel in the frame so that the wires are hidden more.
+
+** Better base
+Instead of aluminum foil I am going to use a piece of thin sheet metal. (This could be part of a soda can.) That way the wires cannot rip a hole in it. 
