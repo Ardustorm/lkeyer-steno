@@ -3,30 +3,37 @@ use <MCAD/shapes.scad>;
 $fn = 100;
 
 
-
-//translate([10,0,0])cube([100,120,.3],center=true);
+//print bed (sort of)
+//color([.9,.6,.6])translate([-20,0,0])cube([120,130,.3],center=true);
 hingeThickness = .5;
 
-//actual part to print 
-//halfBoard();
 
-//key();
-//keyFrame(numOfKeys=3, sideSpacing=20, frontSpacing=1);
+/////////// Print this \\\\\\\\\\\\
 
-keyBankWidth([3,-1,0,0,1,-3]);
-
-
+difference() {
+   union() {
+      keyBankWidth([3,-1,0,0,1,-3]);
+      translate([-53.5,40,0]) rotate([0,0,0]) color([.8,.8,.8,.9]) keyBankWidth( [2,-2], single=true );
+      // to keep ends from lifting
+      translate([-34,62.75,0.1]) cube([10,.5,.2],center = true);
+      translate([33,61.75,0.1]) cube([6,.5,.2],center = true);
+   }
+   translate([-34,20,0]) rotate([90,0,0]) cylinder(r= 2, h = 20,center = true);
+}
 
 //This module allows the construction of a board using an array to indicate which keys to add extra width to
-module keyBankWidth(keys=[0,0,0,0,0,0], sideSpacing=20, frontSpacing=2) { /*  */
+module keyBankWidth(keys=[0,0,0,0,0,0], sideSpacing=20, frontSpacing=2, single=false) {
    frameThickness = 4;  //how tall the frame is
    frameWidth = 8;      //how wide the frame is in x and y
    hingeLength = 4;     //how long each hinge should be
-   frameX = 25*2+frontSpacing+hingeLength*2;
+   frameX1 = 25 + frontSpacing+hingeLength; //x value
+   frameX = single ? frameX1 : frameX1 + 25 + hingeLength; //xval based on if two or 1 key
    frameY = sideSpacing*(len(keys) -.1);
    keyWidth = 15;
    keyLength = 25;
-	  
+
+
+   
    difference() {
       union(){
 					
@@ -34,12 +41,17 @@ module keyBankWidth(keys=[0,0,0,0,0,0], sideSpacing=20, frontSpacing=2) { /*  */
 	 translate([0,-(len(keys)-1)*sideSpacing/2  ,0])
 	    for( i =[ 0 : len(keys)-1 ] ) {
 	       //bottom set (+x)
-	       translate([0,i*sideSpacing,0])
-		  key(rounded=false,length=keyLength, keyWidth,rounding=2,thickness=3, hinge=hingeThickness,extraWidth=keys[i]);
+	       xOffset = single ? -keyLength/2 : 0;
+	       translate([xOffset,i*sideSpacing,0])
+		  key(rounded=false,length=keyLength, keyWidth,rounding=2,thickness=3, hinge=hingeThickness,
+		      extraWidth=keys[i]);
 	       //top set (-x)
-	       translate([-frontSpacing,i*sideSpacing,0]) rotate([0,0,180])
-		  key(rounded=false,length=keyLength, keyWidth,rounding=2,thickness=3, hinge=hingeThickness,extraWidth=-keys[i]);
-          
+	       translate([-frontSpacing,i*sideSpacing,0]) rotate([0,0,180]) {
+		  if( ! single ) {
+		     key(rounded=false,length=keyLength, keyWidth,
+			 rounding=2, thickness=3, hinge=hingeThickness, extraWidth=-keys[i]);
+		  }
+	       }
 
 	    }
 
@@ -55,22 +67,16 @@ module keyBankWidth(keys=[0,0,0,0,0,0], sideSpacing=20, frontSpacing=2) { /*  */
 
       // wire channel
       //Bottom channel
-      translate([frameX/2 + frameWidth/2,frameWidth/2,0])rotate([90,0,0]) cylinder(r=2,h=frameY+frameWidth,center=true);
+      translate([frameX/2 + frameWidth/2,frameWidth/2,0])
+	 rotate([90,0,0]) cylinder(r=2,h=frameY+frameWidth,center=true);
       //Topchannel
-      translate([-(frameX/2 + frameWidth/2),frameWidth/2,0]) rotate([90,0,0]) cylinder(r=2,h=frameY+frameWidth,center=true);
-
-
-
-      //Slots in the frame to guide cables
-      for( i =[ -len(keys)/2: (len(keys)/2)-1 ] ) {
-	 //Bottom guides
-	 translate([2*keyWidth-keyLength-1,(i+.5)*sideSpacing,-.6]) rotate([0,89,0]) cylinder(r=1,h = keyLength*.8);
-	 translate([2*keyWidth,(i+.5)*sideSpacing,-frameThickness/2]) rotate([0,45,0]) cylinder(r=1,h = frameThickness);
-	 //Topguides
-	 translate([-2*keyWidth+3,(i+.5)*sideSpacing,-.6]) rotate([0,89,0]) cylinder(r=1,h = keyLength*.8);
-
-	 translate([-2*keyWidth,(i+.5)*sideSpacing,-frameThickness/2]) rotate([0,-45,0]) cylinder(r=1,h = frameThickness);
+      translate([-(frameX/2 + frameWidth/2),frameWidth/2,0])
+	 rotate([90,0,0]) {
+	 if( ! single ) {
+	    cylinder(r=2,h=frameY+frameWidth,center=true);
+	 }
       }
+   
    }
 }
 
@@ -83,7 +89,8 @@ module halfBoard(){
    }
 }
 
-module keyFrame(numOfKeys = 6, sideSpacing = 20, frontSpacing = 2){
+
+module keyFrame(numOfKeys = 6, sideSpacing = 20, frontSpacing = 2, single=false){
    frameThickness = 4;  //how tall the frame is
    frameWidth = 8;      //how wide the frame is in x and y
    hingeLength = 4;     //how long each hinge should be
@@ -160,7 +167,7 @@ module key(rounded=false,length=25, keyWidth=15,rounding=2,thickness=3, hinge=.4
 	    //center hole
 	    translate([-.001,0,radiusOfWire+hingeThickness])rotate([0,90,0])cylinder(r=radiusOfWire,h=thickness+2);
 	    //front groove
-	    translate([-.5,0,0])rotate([0,10,0])cylinder(r=radiusOfWire,h=radiusOfWire+hingeThickness);
+	    //translate([-.5,0,0])rotate([0,10,0])cylinder(r=radiusOfWire,h=radiusOfWire+hingeThickness);
 	    //Bottom groove
 	    //translate([length*.2,0,-radiusOfWire/2])r otate([0,90,0]) cylinder(r=radiusOfWire,h=length+lengthOfHinge/2);
 	 }
