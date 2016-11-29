@@ -5,7 +5,7 @@ $fn = 100;
 
 //print bed (sort of)
 //color([.9,.6,.6])translate([-20,0,0])cube([120,130,.3],center=true);
-hingeThickness = .5;
+hingeThickness = .35;
 
 
 /////////// Print this \\\\\\\\\\\\
